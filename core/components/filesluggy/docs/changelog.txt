@@ -1,5 +1,11 @@
 Changelog for FileSluggy.
 
+
+FileSluggy 1.1
+==============
+- BugFixes: Issue #1 & Issue #2 :  If File already has a good name don change the name. 
+
+
 FileSluggy 1.0
 ==============
 - Initial release.

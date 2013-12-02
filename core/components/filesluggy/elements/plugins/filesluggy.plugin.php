@@ -31,39 +31,40 @@
  * @package filesluggy
  * @subpackage lexicon
  */
+
 $FileSluggy = $modx->getService('filesluggy', 'FileSluggy', $modx->getOption('filesluggy.core_path', null, $modx->getOption('core_path') . 'components/filesluggy/') . 'model/filesluggy/', $scriptProperties);
 if (!($FileSluggy instanceof FileSluggy))
-    return '';
+  return '';
 
 switch ($modx->event->name) {
-    case 'OnFileManagerUpload':
-
-
-        foreach ($files as $file) {
-            if (!$source->hasErrors()) {
-                if ($file['error'] == 0) {
-
-                    $basePath = $source->getBasePath();
-                    $oldPath = $directory . $file['name'];
-					if($FileSluggy->allowType($file['name'])){
-						$newFileName = $FileSluggy->sanitizeName($file['name']);
-						$newFileName = $FileSluggy->checkFileExists($basePath.$directory.$newFileName);
-						
-						if($source->renameObject($oldPath, $newFileName)){
-							return;
-						}else{
-							return;
-						}
-					}else{
-					return;
-					}
-                    
-                } else {
-                    return;
-                }
+  case 'OnFileManagerUpload':
+    foreach ($files as $file) {
+      if (!$source->hasErrors()) {
+        if ($file['error'] == 0) {
+          $basePath = $source->getBasePath();
+          $oldPath = $directory . $file['name'];
+          if ($FileSluggy->allowType($file['name'])) {
+            $newFileName = $FileSluggy->sanitizeName($file['name']);
+            if ($FileSluggy->checkFileNameChanged()) {
+              $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
+              if ($source->renameObject($oldPath, $newFileName)) {
+                return;
+              } else {
+                return;
+              }
             } else {
-                $modx->log(modX::LOG_LEVEL_ERROR, '[FileSluggy] There was an error during the upload process...');
+              return;
             }
+          } else {
+            return;
+          }
+        } else {
+          return;
         }
-        break;
+      } else {
+        $modx->log(modX::LOG_LEVEL_ERROR, '[FileSluggy] There was an error during the upload process...');
+      }
+      return;
+    }
+    break;
 }
