@@ -15,8 +15,8 @@ set_time_limit(0);
 /* define package */
 define('PKG_NAME', 'FileSluggy');
 define('PKG_NAMESPACE', 'filesluggy');
-define('PKG_VERSION', '1.0');
-define('PKG_RELEASE', 'rc');
+define('PKG_VERSION', '1.1');
+define('PKG_RELEASE', 'pl');
 define('PKG_CATEGORY', 'FileSluggy');
 
 /* define sources */

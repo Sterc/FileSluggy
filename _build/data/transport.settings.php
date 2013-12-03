@@ -86,6 +86,15 @@ $settings['filesluggy.allowed_file_types']->fromArray(array(
     'area' => 'fs_type',
 ),'',true,true);
 
+$settings['filesluggy.constrain_mediasource']= $modx->newObject('modSystemSetting');
+$settings['filesluggy.constrain_mediasource']->fromArray(array(
+    'key' => 'filesluggy.constrain_mediasource',
+    'value' => '',
+    'xtype' => 'textfield',
+    'namespace' => 'filesluggy',
+    'area' => 'fs_type',
+),'',true,true);
+
 
 
 return $settings;

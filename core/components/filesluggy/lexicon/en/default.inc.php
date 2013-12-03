@@ -24,6 +24,8 @@ $_lang['setting_filesluggy.lowercase_only'] = 'Lowercase only';
 $_lang['setting_filesluggy.lowercase_only_desc'] = 'Force output put to be in lower case';
 $_lang['setting_filesluggy.allowed_file_types'] = 'Filetypes';
 $_lang['setting_filesluggy.allowed_file_types_desc'] = 'Only filetypes with this extension will be processed. Comma separated value';
+$_lang['setting_filesluggy.constrain_mediasource'] = 'Constrain to MediaSource';
+$_lang['setting_filesluggy.constrain_mediasource_desc'] = 'To which mediasource you would like to constrain FileSluggy. Leave empty to allow on all.  Enter the ID\'s of the media sources Comma separated value';
 
 $_lang['area_fs_encoding'] = 'Transliteration Settings';
 $_lang['area_fs_guid'] = 'Output settings';

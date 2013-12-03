@@ -2,7 +2,7 @@
 
 /**
  * FileSluggy by Sterc
- * Sanitizes a filename to be a nice and more clean filename, so it will work better with phpthumb and that kind of stuff
+ * Sanitizes a filename to be a nice and more clean filename, so it will work better with phpthumb and that kind of stuff.
  */
 class FileSluggy {
 
@@ -12,7 +12,7 @@ class FileSluggy {
   /** @var array $config */
   public $config = array();
   private $_FileNameSameAsOrginal = false;
-  private $_mediaSourceAllow = array();
+  private $_mediaSourceAllow = null;
 
   function __construct(modX &$modx, array $config = array()) {
     $this->modx = & $modx;
@@ -24,24 +24,15 @@ class FileSluggy {
     $fileNamePrefix = (string) $this->modx->getOption('filenamePrefix', $config, $this->modx->getOption('filesluggy.filename_prefix', null, ''));
     $ignoreFilename = (boolean) $this->modx->getOption('ignoreFilename', $config, $this->modx->getOption('filesluggy.ignorefilename', null, 0)); // Replaces the whole file name with a guid.
     $Delimiter = $this->modx->getOption('word_delimiter', $config, $this->modx->getOption('filesluggy.word_delimiter', null, '-'));
-
     $fileTypes = $this->modx->getOption('allowed_file_types', $config, $this->modx->getOption('filesluggy.allowed_file_types', null, 'jpg,jpeg,png,gif,psd,ico,bmp,svg,doc,docx,pdf'));
     $LowerCaseOnly = (boolean) $this->modx->getOption('lowercase_only', $config, $this->modx->getOption('filesluggy.lowercase_only', null, 1));
-    $constrainMediaSource = $this->modx->getOption('media_sources', $config, $this->modx->getOption('filesluggy.media_sources', null, null));
-    $disableFileSluggy = (boolean) $this->modx->getOption('disableFileSluggy', $config, $this->modx->getOption('filesluggy.disable_filesluggy', null, false));
+    $constrainMediaSource = $this->modx->getOption('constrain_mediasource', $config, $this->modx->getOption('filesluggy.constrain_mediasource', null, null));
     $cultureKey = $this->modx->getOption('cultureKey', null, 'en');
     $this->SkipIconv = function_exists('iconv') ? false : true;
     $this->SkipMB = function_exists('mb_check_encoding') ? false : true;
 
-    if (!empty($constrainMediaSource)) {
-      $arrMS = explode(",", $constrainMediaSource);
-      if (is_array($arrMS)) {
-        $this->_mediaSourceAllow = $arrMS;
-      }
-    }
 
     $this->config = array_merge(array(
-        'disableFileSluggy' => $disableFileSluggy,
         'corePath' => $corePath,
         'modelPath' => $corePath . 'model/',
         'charSet' => $charSet,
@@ -55,6 +46,8 @@ class FileSluggy {
         'cultureKey' => $cultureKey,
         'fileTypes' => $fileTypes
             ), $config);
+
+
     $this->config['filenamePrefix'] = trim($this->config['filenamePrefix']);
 
     if (!in_array($this->config['wordDelimiter'], array("-", "_"))) {
@@ -72,30 +65,43 @@ class FileSluggy {
         $this->config['fileTypes'] = $tmpArr;
       }
     }
+    if (!empty($constrainMediaSource)) {
+      $arrMS = explode(",", $constrainMediaSource);
+      if (is_array($arrMS) && count($arrMS) > 0) {
+        $this->_mediaSourceAllow = $arrMS;
+      } else {
+        $this->_mediaSourceAllow = null;
+      }
+    }
+
+
     $this->modx->addPackage('filesluggy', $this->config['modelPath']);
     $this->modx->lexicon->load('filesluggy:default');
   }
 
   /**
-   * @todo Be able to use this function ;)
+   *
    * @param int $sourceID sourceID where files are uploaded into
    * @return boolean TRUE allow filesluggy || FALSE prohibit filesluggy
    */
   public function santizeAllowThisMediaSource($sourceID = null) {
-    if ((boolean) $this->config['disableFileSluggy']) {
-      return false;
-    } else {
-      if (!empty($sourceID)) {
-        if (in_array($sourceID, $this->_mediaSourceAllow)) {
-          return true;
-        } else {
-          return false;
-        }
-      }
+    if (empty($this->_mediaSourceAllow)) {
       return true;
+    }
+    if (!empty($sourceID)) {
+      if (in_array($sourceID, $this->_mediaSourceAllow)) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
+  /**
+   * Check if the file extenstion may be processed.
+   * @param type $filename
+   * @return boolean
+   */
   public function allowType($filename) {
     $fileData = pathinfo($filename);
     $fileName = $fileData['filename'];
@@ -110,8 +116,7 @@ class FileSluggy {
   }
 
   /**
-   * 
-   * 
+   * Check if the checkfile exists. If so add duplicate.
    * @param string  $filePath complete location of file
    * @param array $options //not used yet
    * @return string $fileName the new filename
