@@ -201,7 +201,6 @@ class FileSluggy {
        */      
       if ($translitTableName = $this->modx->getOption('friendly_alias_translit', null)) {
         $translitModelPath = MODX_CORE_PATH . 'components/translit/model/modx/translit/';
-        include_once($translitModelPath.'modtransliterate.class.php');
         $this->modx->getService('translit','modTransliterate', $translitModelPath);
 
         $newFilename = $this->modx->translit->translate($newFilename, $translitTableName);
