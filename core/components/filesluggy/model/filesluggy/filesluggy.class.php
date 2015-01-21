@@ -197,6 +197,16 @@ class FileSluggy {
       }
 
       /**
+       *  Use translit extra
+       */      
+      if ($translitTableName = $this->modx->getOption('friendly_alias_translit', null)) {
+        $translitModelPath = MODX_CORE_PATH . 'components/translit/model/modx/translit/';
+        $this->modx->getService('translit','modTransliterate', $translitModelPath);
+
+        $newFilename = $this->modx->translit->translate($newFilename, $translitTableName);
+      }
+      
+      /**
        * 	If possible execute iconv
        */
       if (!$this->SkipIconv) {
