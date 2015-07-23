@@ -37,6 +37,17 @@ if (!($FileSluggy instanceof FileSluggy))
   return '';
 
 switch ($modx->event->name) {
+  case 'OnFileManagerDirCreate':
+  case 'OnFileManagerDirRename':
+      if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
+        if($modx->getOption('filesluggy.sanitizeDir')){
+          $basePath = $source->getBasePath();
+          $dirName = basename($directory);
+          $dirName = $FileSluggy->sanitizeName($dirName,true);
+          $source->renameContainer(str_replace($basePath, '', $directory), $dirName);
+        }
+      }
+      break;
   case 'OnFileManagerUpload':
     foreach ($files as $file) {
       if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {

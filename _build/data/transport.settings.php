@@ -77,6 +77,15 @@ $settings['filesluggy.lowercase_only']->fromArray(array(
     'area' => 'fs_guid',
 ),'',true,true);
 
+$settings['filesluggy.sanitizeDir']= $modx->newObject('modSystemSetting');
+$settings['filesluggy.sanitizeDir']->fromArray(array(
+    'key' => 'filesluggy.sanitizeDir',
+    'value' => true,
+    'xtype' => 'combo-boolean',
+    'namespace' => 'filesluggy',
+    'area' => 'fs_type',
+),'',true,true);
+
 $settings['filesluggy.allowed_file_types']= $modx->newObject('modSystemSetting');
 $settings['filesluggy.allowed_file_types']->fromArray(array(
     'key' => 'filesluggy.allowed_file_types',

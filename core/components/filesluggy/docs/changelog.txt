@@ -1,5 +1,9 @@
 Changelog for FileSluggy.
 
+FileSluggy 1.2
+==============
+- Added directory name converting
+
 
 FileSluggy 1.1
 ==============

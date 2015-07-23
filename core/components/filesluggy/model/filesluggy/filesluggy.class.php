@@ -28,6 +28,7 @@ class FileSluggy {
     $LowerCaseOnly = (boolean) $this->modx->getOption('lowercase_only', $config, $this->modx->getOption('filesluggy.lowercase_only', null, 1));
     $constrainMediaSource = $this->modx->getOption('constrain_mediasource', $config, $this->modx->getOption('filesluggy.constrain_mediasource', null, null));
     $cultureKey = $this->modx->getOption('cultureKey', null, 'en');
+    $sanitizeDir = $this->modx->getOption('sanitizeDir', $config, $this->modx->getOption('filesluggy.sanitizeDir', null, false));
     $this->SkipIconv = function_exists('iconv') ? false : true;
     $this->SkipMB = function_exists('mb_check_encoding') ? false : true;
 
@@ -44,6 +45,7 @@ class FileSluggy {
         'wordDelimiter' => $Delimiter,
         'lowerCase' => $LowerCaseOnly,
         'cultureKey' => $cultureKey,
+        'sanitizeDir' => $sanitizeDir,
         'fileTypes' => $fileTypes
             ), $config);
 
@@ -97,6 +99,13 @@ class FileSluggy {
     }
   }
 
+  /**
+   * Check if we have to sanitize the directories.
+   * @return boolean
+   */
+  public function sanitizeDir(){
+    return $this->sanitizeDir;
+  }
   /**
    * Check if the file extenstion may be processed.
    * @param type $filename
@@ -160,12 +169,11 @@ class FileSluggy {
    * @version 1.1 Added check for filename changes;
    * @return mixed $newFilename new sanitized filename; 
    */
-  public function sanitizeName($filePath) {
+  public function sanitizeName($filePath, $isdir = false) {
     $fileData = pathinfo($filePath);
     $fileName = $fileData['filename'];
     $fileExt = $fileData['extension'];
 
-    if ($this->allowType($filePath)) {
       $newFilename = '';
       /**
        * Add Prefix and Guid to the filename
@@ -197,7 +205,7 @@ class FileSluggy {
       }
 
       /**
-       * 	If possible execute iconv
+       *  If possible execute iconv
        */
       if (!$this->SkipIconv) {
         setlocale(LC_ALL, strtolower($this->config['cultureKey']) . '_' . strtoupper($this->config['cultureKey']));
@@ -243,10 +251,11 @@ class FileSluggy {
       if ($newFilename == $fileName) {
         $this->_FileNameSameAsOrginal = true;
       }
+      if($isdir){
+        return $newFilename;
+      }
       return $newFilename . '.' . $fileExt;
-    } else {
-      return false;
-    }
+    
   }
 
 }
