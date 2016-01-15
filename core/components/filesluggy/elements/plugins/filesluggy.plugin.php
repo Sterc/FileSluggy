@@ -1,10 +1,9 @@
 <?php
-
 /**
  * FileSluggy by Sterc
- * Sanitizes a filename to be a nice and more clean filename, so it will work better with phpthumb and that kind of stuff
-
- * Copyright 2013 by Sterc
+ * Sanitizes a filename on upload to be a nice and more clean filename, so it will work better with phpthumbof, pthumb and overall cleaner filenames and directories.
+ 
+ * Copyright 2015 by Sterc
  * FileSluggy is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
@@ -19,66 +18,75 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  *
  *
- * @authors Friso Speulman <friso@sterc.nl> & Wieger Sloot <wieger@sterc.nl>
+ * @author Sterc <modx@sterc.nl>
  * @credits:
  *      - Based on the code of the sanitizefilename plugin of Benjamin Vauchel https://github.com/benjamin-vauchel/SanitizeFilename
  *      - The Slug() phunction of AlixAxel https://github.com/alixaxel/phunction/blob/master/phunction/Text.php
- * @version Version 1.0
+ * @version Version 1.2
  * @package filesluggy
  */
-/**
- * Default English Lexicon Entries for FileSluggy
- *
- * @package filesluggy
- * @subpackage lexicon
- */
+
 $FileSluggy = $modx->getService('filesluggy', 'FileSluggy', $modx->getOption('filesluggy.core_path', null, $modx->getOption('core_path') . 'components/filesluggy/') . 'model/filesluggy/', $scriptProperties);
-if (!($FileSluggy instanceof FileSluggy))
-  return '';
+if (!($FileSluggy instanceof FileSluggy)) return;
 
 switch ($modx->event->name) {
-  case 'OnFileManagerDirCreate':
-  case 'OnFileManagerDirRename':
-      if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
-        if($modx->getOption('filesluggy.sanitizeDir')){
-          $basePath = $source->getBasePath();
-          $dirName = basename($directory);
-          $dirName = $FileSluggy->sanitizeName($dirName,true);
-          $source->renameContainer(str_replace($basePath, '', $directory), $dirName);
-        }
-      }
-      break;
-  case 'OnFileManagerUpload':
-    foreach ($files as $file) {
-      if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
-        if (!$source->hasErrors()) {
-          if ($file['error'] == 0) {
-            $basePath = $source->getBasePath();
-            $oldPath = $directory . $file['name'];
-            if ($FileSluggy->allowType($file['name'])) {
-              $newFileName = $FileSluggy->sanitizeName($file['name']);
-              if ($FileSluggy->checkFileNameChanged()) {
-                $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
-                if ($source->renameObject($oldPath, $newFileName)) {
-                  return;
-                } else {
-                  return;
-                }
-              } else {
-                return;
-              }
-            } else {
-              return;
+    case 'OnFileManagerDirCreate':
+    case 'OnFileManagerDirRename':
+        if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
+            if ($modx->getOption('filesluggy.sanitizeDir')) {
+                $basePath = $source->getBasePath();
+                $dirName  = basename($directory);
+                $dirName  = $FileSluggy->sanitizeName($dirName, true);
+                $source->renameContainer(str_replace($basePath, '', $directory), $dirName);
             }
-          } else {
-            return;
-          }
-        } else {
-          $modx->log(modX::LOG_LEVEL_ERROR, '[FileSluggy] There was an error during the upload process...');
         }
-        return;
-      }
-      return;
-    }
-    break;
+        break;
+    case 'OnFileManagerUpload':
+        $validControllers = array(
+            'resource/create',
+            'resource/update',
+            'media/browser'
+        );
+        $controller = $_GET['a'];
+        if(is_numeric($controller)) {
+            // compatibility with older modx versions where $_GET['a'] is ID of action
+            $action = $modx->getObject('modAction', $_GET['a']);
+            if(is_object($action)) {
+                $controller = $action->get('controller');
+            }
+        }
+        if (in_array($controller, $validControllers)) {
+            foreach ($files as $file) {
+                if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
+                    if (!$source->hasErrors()) {
+                        if ($file['error'] == 0) {
+                            $basePath = $source->getBasePath();
+                            $oldPath  = $directory . $file['name'];
+                            if ($FileSluggy->allowType($file['name'])) {
+                                $newFileName = $FileSluggy->sanitizeName($file['name']);
+                                if ($FileSluggy->checkFileNameChanged()) {
+                                    $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
+                                    if ($source->renameObject($oldPath, $newFileName)) {
+                                        return;
+                                    } else {
+                                        return;
+                                    }
+                                } else {
+                                    return;
+                                }
+                            } else {
+                                return;
+                            }
+                        } else {
+                            return;
+                        }
+                    } else {
+                        $modx->log(modX::LOG_LEVEL_ERROR, '[FileSluggy] There was an error during the upload process...');
+                    }
+                    return;
+                }
+                return;
+            }
+        }
+        break;
 }
