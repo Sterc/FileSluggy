@@ -49,7 +49,6 @@ switch ($modx->event->name) {
             strpos($query,'a=resource/update') !== false || 
             strpos($query,'a=media/browser') !== false 
         ) {
-            $modx->log(modX::LOG_LEVEL_ERROR, 'fs test: '.$query);
             foreach ($files as $file) {
                 if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
                     if (!$source->hasErrors()) {
