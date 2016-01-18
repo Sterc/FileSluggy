@@ -42,20 +42,14 @@ switch ($modx->event->name) {
         }
         break;
     case 'OnFileManagerUpload':
-        $validControllers = array(
-            'resource/create',
-            'resource/update',
-            'media/browser'
-        );
-        $controller = $_GET['a'];
-        if(is_numeric($controller)) {
-            // compatibility with older modx versions where $_GET['a'] is ID of action
-            $action = $modx->getObject('modAction', $_GET['a']);
-            if(is_object($action)) {
-                $controller = $action->get('controller');
-            }
-        }
-        if (in_array($controller, $validControllers)) {
+        $url = parse_url($_SERVER['HTTP_REFERER']);
+        $query = $url['query'];
+        if (
+            strpos($query,'a=resource/create') !== false || 
+            strpos($query,'a=resource/update') !== false || 
+            strpos($query,'a=media/browser') !== false 
+        ) {
+            $modx->log(modX::LOG_LEVEL_ERROR, 'fs test: '.$query);
             foreach ($files as $file) {
                 if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
                     if (!$source->hasErrors()) {
