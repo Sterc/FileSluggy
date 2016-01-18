@@ -1,12 +1,10 @@
 FileSluggy
 --------------------
-Version: 1.1
-Author: Friso Speulman <friso@sterc.nl>
-		Wieger Sloot <wieger@sterc.nl>
+Version: 1.3
+Author: Sterc <modx@sterc.nl>
 --------------------
 
-A MODx Revolution plugin to convert a filename to lowercases and removes strange characters.
-Works on the "OnFileManagerUpload" event. 
+A MODx Revolution plugin to convert a filename to lowercase and removes strange and unwanted characters. Also has the option to sanitize directory names when creating or renaming directories.
+Uses the OnFileManagerUpload, OnFileManagerDirCreate and OnFileManagerDirRename events. 
 
-
-Suggestions and Bugs can be emailed to :modx@sterc.nl
+Suggestions and Bugs can be submitted on Github: https://github.com/sterc/filesluggy/issues
