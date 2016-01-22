@@ -37,7 +37,7 @@ switch ($modx->event->name) {
                 $basePath = $source->getBasePath();
                 $dirName  = basename($directory);
                 $dirName  = $FileSluggy->sanitizeName($dirName, true);
-                $source->renameContainer(str_replace($basePath, '', $directory), $dirName);
+                $FileSluggy->renameContainer($source, str_replace($basePath, '', $directory), $dirName);
             }
         }
         break;
