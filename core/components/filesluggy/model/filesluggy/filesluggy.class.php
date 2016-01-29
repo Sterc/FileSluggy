@@ -258,4 +258,41 @@ class FileSluggy {
     
   }
 
+  /**
+   * @param object $source
+   * @param string $oldPath
+   * @param string $newName
+   * @return bool
+   */
+  public function renameContainer($source,$oldPath,$newName) {
+    $bases = $source->getBases($oldPath);
+    $oldPath = $bases['pathAbsolute'].$oldPath;
+
+    /** @var modDirectory $oldDirectory */
+    $oldDirectory = $source->fileHandler->make($oldPath);
+
+    /* make sure is a directory and writable */
+    if (!($oldDirectory instanceof modDirectory)) {
+      $this->addError('name',$this->xpdo->lexicon('file_folder_err_invalid'));
+      return false;
+    }
+    if (!$oldDirectory->isReadable() || !$oldDirectory->isWritable()) {
+      $this->addError('name',$this->xpdo->lexicon('file_folder_err_perms'));
+      return false;
+    }
+
+    /* sanitize new path */
+    $newPath = $source->fileHandler->sanitizePath($newName);
+    $newPath = $source->fileHandler->postfixSlash($newPath);
+    $newPath = dirname($oldPath).'/'.$newPath;
+    /* rename the dir */
+    if (!$oldDirectory->rename($newPath)) {
+      $this->addError('name',$this->xpdo->lexicon('file_folder_err_rename'));
+      return false;
+    }
+
+    return true;
+  }
+
+
 }
