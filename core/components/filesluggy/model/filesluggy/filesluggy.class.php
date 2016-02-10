@@ -181,17 +181,19 @@ class FileSluggy {
       if (!empty($this->config['filenamePrefix'])) {
         $newFilename .= $this->config['filenamePrefix'] . $this->config['wordDelimiter'];
       }
-
-      if ((boolean) $this->config['ignoreFilename'] && (boolean) $this->config['addGuid']) {
-
-        $newFilename .= uniqid() . $this->config['wordDelimiter'];
-      } elseif ((boolean) $this->config['ignoreFilename'] && (boolean) !$this->config['addGuid']) {
-        $newFilename .= uniqid() . $this->config['wordDelimiter'];
-      } elseif ((boolean) !$this->config['ignoreFilename'] && (boolean) $this->config['addGuid']) {
-        $newFilename .=uniqid() . $this->config['wordDelimiter'] . $fileName;
-      } else {
-        $newFilename .= $fileName;
+     
+      if (!$this->config['ignoreFilename']) {
+          $newFilename .= $fileName;
       }
+      
+      if ($this->config['addGuid'] || $this->config['ignoreFilename']) {
+          if ($this->config['GUIDLocation'] == 'suffix') {
+            $newFilename = $newFilename . $this->config['wordDelimiter'] . uniqid();
+          } else {
+            $newFilename = uniqid() . $this->config['wordDelimiter'] . $newFilename;
+          }
+      }
+      
       $newFilename = trim($newFilename, $this->config['wordDelimiter']);
 
 
