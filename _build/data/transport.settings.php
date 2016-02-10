@@ -41,6 +41,15 @@ $settings['filesluggy.guid_use']->fromArray(array(
     'area' => 'fs_guid',
 ),'',true,true);
 
+$settings['filesluggy.guid_location']= $modx->newObject('modSystemSetting');
+$settings['filesluggy.guid_location']->fromArray(array(
+    'key' => 'filesluggy.guid_location',
+    'value' => 'prefix',
+    'xtype' => 'textfield',
+    'namespace' => 'filesluggy',
+    'area' => 'fs_guid',
+),'',true,true);
+
 $settings['filesluggy.filename_prefix']= $modx->newObject('modSystemSetting');
 $settings['filesluggy.filename_prefix']->fromArray(array(
     'key' => 'filesluggy.filename_prefix',
