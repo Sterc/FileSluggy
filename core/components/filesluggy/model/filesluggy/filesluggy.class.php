@@ -178,9 +178,6 @@ class FileSluggy {
       /**
        * Add Prefix and Guid to the filename
        */
-      if (!empty($this->config['filenamePrefix'])) {
-        $newFilename .= $this->config['filenamePrefix'] . $this->config['wordDelimiter'];
-      }
      
       if (!$this->config['ignoreFilename']) {
           $newFilename .= $fileName;
@@ -192,6 +189,10 @@ class FileSluggy {
           } else {
             $newFilename = uniqid() . $this->config['wordDelimiter'] . $newFilename;
           }
+      }
+      
+      if (!empty($this->config['filenamePrefix'])) {
+        $newFilename = $this->config['filenamePrefix'] . $this->config['wordDelimiter'] . $newFilename;
       }
       
       $newFilename = trim($newFilename, $this->config['wordDelimiter']);
