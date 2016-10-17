@@ -1,5 +1,11 @@
 Changelog for FileSluggy, a MODX Revolution extra by Sterc.
 
+FileSluggy 1.3.1
+==============
+- Wrap baseName in realpath function (Issue #10).
+- Remove check for resource/media browser pages (issue #15).
+- Add custom system events FileSluggyOnUpdateDirname and FileSluggyOnUpdateFilename
+
 FileSluggy 1.3
 ==============
 - Trigger plugin only on resource and media browser manager pages.

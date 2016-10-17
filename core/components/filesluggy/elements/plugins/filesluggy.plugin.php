@@ -24,11 +24,20 @@
  * @package filesluggy
  */
 
-$FileSluggy = $modx->getService('filesluggy', 'FileSluggy', $modx->getOption('filesluggy.core_path', null, $modx->getOption('core_path') . 'components/filesluggy/') . 'model/filesluggy/', $scriptProperties);
+$FileSluggy = $modx->getService(
+    'filesluggy',
+    'FileSluggy',
+    $modx->getOption(
+        'filesluggy.core_path',
+        null,
+        $modx->getOption('core_path') . 'components/filesluggy/'
+    )
+    .'model/filesluggy/',
+    $scriptProperties
+);
 if (!($FileSluggy instanceof FileSluggy)) {
     return;
 }
-$modx->
 switch ($modx->event->name) {
     case 'OnFileManagerDirCreate':
     case 'OnFileManagerDirRename':
@@ -38,31 +47,26 @@ switch ($modx->event->name) {
                 $dirName  = basename($directory);
                 $dirName  = $FileSluggy->sanitizeName($dirName, true);
                 $FileSluggy->renameContainer($source, str_replace(realpath($basePath), '', $directory), $dirName);
+                /* @TODO add custom system event 'FileSluggyOnUpdateDirname' */
             }
         }
         break;
     case 'OnFileManagerUpload':
+        /* @TODO add custom system event 'FileSluggyOnUpdateFilename' */
         $url = parse_url($_SERVER['HTTP_REFERER']);
         $query = $url['query'];
-        if (strpos($query, 'a=resource/create') !== false ||
-            strpos($query, 'a=resource/update') !== false ||
-            strpos($query, 'a=media/browser') !== false
-        ) {
-            foreach ($files as $file) {
-                if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
-                    if (!$source->hasErrors()) {
-                        if ($file['error'] == 0) {
-                            $basePath = $source->getBasePath();
-                            $oldPath  = $directory . $file['name'];
-                            if ($FileSluggy->allowType($file['name'])) {
-                                $newFileName = $FileSluggy->sanitizeName($file['name']);
-                                if ($FileSluggy->checkFileNameChanged()) {
-                                    $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
-                                    if ($source->renameObject($oldPath, $newFileName)) {
-                                        return;
-                                    } else {
-                                        return;
-                                    }
+        foreach ($files as $file) {
+            if ($FileSluggy->santizeAllowThisMediaSource($source->get('id'))) {
+                if (!$source->hasErrors()) {
+                    if ($file['error'] == 0) {
+                        $basePath = $source->getBasePath();
+                        $oldPath  = $directory . $file['name'];
+                        if ($FileSluggy->allowType($file['name'])) {
+                            $newFileName = $FileSluggy->sanitizeName($file['name']);
+                            if ($FileSluggy->checkFileNameChanged()) {
+                                $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
+                                if ($source->renameObject($oldPath, $newFileName)) {
+                                    return;
                                 } else {
                                     return;
                                 }
@@ -73,15 +77,17 @@ switch ($modx->event->name) {
                             return;
                         }
                     } else {
-                        $modx->log(
-                            modX::LOG_LEVEL_ERROR,
-                            '[FileSluggy] There was an error during the upload process...'
-                        );
+                        return;
                     }
-                    return;
+                } else {
+                    $modx->log(
+                        modX::LOG_LEVEL_ERROR,
+                        '[FileSluggy] There was an error during the upload process...'
+                    );
                 }
                 return;
             }
+            return;
         }
         break;
 }
