@@ -28,7 +28,7 @@ $FileSluggy = $modx->getService('filesluggy', 'FileSluggy', $modx->getOption('fi
 if (!($FileSluggy instanceof FileSluggy)) {
     return;
 }
-
+$modx->
 switch ($modx->event->name) {
     case 'OnFileManagerDirCreate':
     case 'OnFileManagerDirRename':
@@ -73,7 +73,10 @@ switch ($modx->event->name) {
                             return;
                         }
                     } else {
-                        $modx->log(modX::LOG_LEVEL_ERROR, '[FileSluggy] There was an error during the upload process...');
+                        $modx->log(
+                            modX::LOG_LEVEL_ERROR,
+                            '[FileSluggy] There was an error during the upload process...'
+                        );
                     }
                     return;
                 }
