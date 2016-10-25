@@ -45,14 +45,17 @@ switch ($modx->event->name) {
             if ($modx->getOption('filesluggy.sanitizeDir')) {
                 $basePath = $source->getBasePath();
                 $dirName  = basename($directory);
-                $dirName  = $FileSluggy->sanitizeName($dirName, true);
-                $FileSluggy->renameContainer($source, str_replace(realpath($basePath), '', $directory), $dirName);
-                /* @TODO add custom system event 'FileSluggyOnUpdateDirname' */
+                $newDirName  = $FileSluggy->sanitizeName($dirName, true);
+                $FileSluggy->renameContainer($source, str_replace(realpath($basePath), '', $directory), $newDirName);
+                /* Invoke custom system event 'FileSluggyOnUpdateDirname' */
+                $modx->invokeEvent('FileSluggyOnUpdateDirname', array(
+                    'oldName' => $dirName,
+                    'newName' => $newDirName
+                ));
             }
         }
         break;
     case 'OnFileManagerUpload':
-        /* @TODO add custom system event 'FileSluggyOnUpdateFilename' */
         $url = parse_url($_SERVER['HTTP_REFERER']);
         $query = $url['query'];
         foreach ($files as $file) {
@@ -66,6 +69,10 @@ switch ($modx->event->name) {
                             if ($FileSluggy->checkFileNameChanged()) {
                                 $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
                                 if ($source->renameObject($oldPath, $newFileName)) {
+                                    $modx->invokeEvent('FileSluggyOnUpdateFilename', array(
+                                        'oldName' => $file['name'],
+                                        'newName' => $newFileName
+                                    ));
                                     return;
                                 } else {
                                     return;
