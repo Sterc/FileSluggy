@@ -20,7 +20,11 @@ if ($object->xpdo) {
                 );
                 if (!$modx->getCount('modEvent', $eventFields)) {
                     $eventObj = $modx->newObject('modEvent');
-                    $eventObj->fromArray($eventFields);
+                    $eventObj->set('name', $eventName);
+                    $eventObj->set('service', 1);
+                    $eventObj->set('groupname', 'FileSluggy');
+                    $eventObj->save();
+                    $modx->log(modX::LOG_LEVEL_INFO, 'Added system event: ' . $eventName);
                 }
             }
             break;

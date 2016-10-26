@@ -268,7 +268,6 @@ class FileSluggy
             return $newFilename;
         }
         return $newFilename . '.' . $fileExt;
-
     }
 
     /**
@@ -277,7 +276,8 @@ class FileSluggy
      * @param string $newName
      * @return bool
      */
-    public function renameContainer($source,$oldPath,$newName) {
+    public function renameContainer($source, $oldPath, $newName)
+    {
         $bases = $source->getBases($oldPath);
         $oldPath = $bases['pathAbsolute'].$oldPath;
 
@@ -286,11 +286,9 @@ class FileSluggy
 
         /* make sure is a directory and writable */
         if (!($oldDirectory instanceof modDirectory)) {
-            $this->addError('name',$this->xpdo->lexicon('file_folder_err_invalid'));
             return false;
         }
         if (!$oldDirectory->isReadable() || !$oldDirectory->isWritable()) {
-            $this->addError('name',$this->xpdo->lexicon('file_folder_err_perms'));
             return false;
         }
 
@@ -300,7 +298,6 @@ class FileSluggy
         $newPath = dirname($oldPath).'/'.$newPath;
         /* rename the dir */
         if (!$oldDirectory->rename($newPath)) {
-            $this->addError('name',$this->xpdo->lexicon('file_folder_err_rename'));
             return false;
         }
 

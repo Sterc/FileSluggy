@@ -78,7 +78,7 @@
     "database": {},
     "build": {
         "resolver": {
-            "after": "resolve.systemevents.php"
+            "before": ["resolve.systemevents.php"]
         }
     }
 }
