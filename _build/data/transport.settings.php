@@ -104,13 +104,13 @@ $settings['filesluggy.constrain_mediasource']->fromArray(array(
     'area' => 'fs_type',
 ),'',true,true);
 
-$settings['filesluggy.triggerFSOUFEventOnNoRename']= $modx->newObject('modSystemSetting');
-$settings['filesluggy.triggerFSOUFEventOnNoRename']->fromArray(array(
-    'key' => 'filesluggy.triggerFSOUFEventOnNoRename',
+$settings['filesluggy.forceFSOUFEvent']= $modx->newObject('modSystemSetting');
+$settings['filesluggy.forceFSOUFEvent']->fromArray(array(
+    'key' => 'filesluggy.forceFSOUFEvent',
     'value' => false,
     'xtype' => 'combo-boolean',
     'namespace' => 'filesluggy',
-    'area' => 'fs_hooks',
+    'area' => 'fs_events',
 ),'',true,true);
 
 
