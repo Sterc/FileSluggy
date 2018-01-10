@@ -80,19 +80,19 @@ switch ($modx->event->name) {
                                     ));
                                     return;
                                 } else {
-                                  if($modx->getOption('filesluggy.triggerFSOUFEventOnNoRename')) {
-                                    $modx->invokeEvent('FileSluggyOnUpdateFilename', array(
-                                        'oldName' => $file['name'],
-                                        'newName' => $newFileName,
-                                        'files' => $newFiles,
-                                        'source' => $source,
-                                        'directory' => $directory
-                                    ));
-                                  }
                                   return;
                                 }
                             } else {
-                                return;
+                              if($modx->getOption('filesluggy.forceFSOUFEvent')) {
+                                $modx->invokeEvent('FileSluggyOnUpdateFilename', array(
+                                  'oldName' => $file['name'],
+                                  'newName' => $newFileName,
+                                  'files' => $files,
+                                  'source' => $source,
+                                  'directory' => $directory
+                                ));
+                              }
+                              return;
                             }
                         } else {
                             return;
