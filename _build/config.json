@@ -73,6 +73,11 @@
             "type": "textfield",
             "value": "",
             "area": "fs_type"
+       },{
+            "key": "triggerFSOUFEventOnNoRename",
+            "type": "combo-boolean",
+            "value": "0",
+            "area": "fs_hooks"
        }]
     },
     "database": {},
