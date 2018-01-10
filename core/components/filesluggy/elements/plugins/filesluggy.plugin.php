@@ -69,13 +69,27 @@ switch ($modx->event->name) {
                             if ($FileSluggy->checkFileNameChanged()) {
                                 $newFileName = $FileSluggy->checkFileExists($basePath . $directory . $newFileName);
                                 if ($source->renameObject($oldPath, $newFileName)) {
+                                    $newFiles = $files;
+                                    $newFiles['file']['name'] = $newFileName;
                                     $modx->invokeEvent('FileSluggyOnUpdateFilename', array(
                                         'oldName' => $file['name'],
-                                        'newName' => $newFileName
+                                        'newName' => $newFileName,
+                                        'files' => $newFiles,
+                                        'source' => $source,
+                                        'directory' => $directory
                                     ));
                                     return;
                                 } else {
-                                    return;
+                                  if($modx->getOption('filesluggy.triggerFSOUFEventOnNoRename')) {
+                                    $modx->invokeEvent('FileSluggyOnUpdateFilename', array(
+                                        'oldName' => $file['name'],
+                                        'newName' => $newFileName,
+                                        'files' => $newFiles,
+                                        'source' => $source,
+                                        'directory' => $directory
+                                    ));
+                                  }
+                                  return;
                                 }
                             } else {
                                 return;
