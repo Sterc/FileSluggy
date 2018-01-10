@@ -74,10 +74,10 @@
             "value": "",
             "area": "fs_type"
        },{
-            "key": "triggerFSOUFEventOnNoRename",
+            "key": "forceFSOUFEvent",
             "type": "combo-boolean",
             "value": "0",
-            "area": "fs_hooks"
+            "area": "fs_events"
        }]
     },
     "database": {},
