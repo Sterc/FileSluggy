@@ -14,107 +14,47 @@ class FileSluggy
     private $_FileNameSameAsOrginal = false;
     private $_mediaSourceAllow = null;
 
+    /**
+     * FileSluggy constructor.
+     *
+     * @param modX $modx
+     * @param array $config
+     */
     public function __construct(modX &$modx, array $config = array())
     {
         $this->modx = & $modx;
-        $corePath = $this->modx->getOption(
-            'filesluggy.core_path',
-            $config,
-            $this->modx->getOption('core_path') . 'components/filesluggy/'
-        );
-        $charSet = $this->modx->getOption(
-            'charset_iconv',
-            $config,
-            $this->modx->getOption('filesluggy.charset_iconv', null, 'US-ASCII//TRANSLIT')
-        );
-        $Encoding = strtoupper(
-            $this->modx->getOption(
-                'enc',
-                $config,
-                $this->modx->getOption('filesluggy.enc', null, 'UTF-8')
-            )
-        );
-        $RegExp = $this->modx->getOption(
-            'regexp',
-            $config,
-            $this->modx->getOption('filesluggy.regexp', null, '/[^\.A-Za-z0-9 _-]/')
-        );
-        $AddGUID = (boolean) $this->modx->getOption(
-            'guid_use',
-            $config,
-            $this->modx->getOption('filesluggy.guid_use', null, 0)
-        );
-        $fileNamePrefix = (string) $this->modx->getOption(
-            'filenamePrefix',
-            $config,
-            $this->modx->getOption('filesluggy.filename_prefix', null, '')
-        );
-        $ignoreFilename = (boolean) $this->modx->getOption(
-            'ignoreFilename',
-            $config,
-            $this->modx->getOption('filesluggy.ignorefilename', null, 0)
-        ); // Replaces the whole file name with a guid.
-        $Delimiter = $this->modx->getOption(
-            'word_delimiter',
-            $config,
-            $this->modx->getOption('filesluggy.word_delimiter', null, '-')
-        );
-        $fileTypes = $this->modx->getOption(
-            'allowed_file_types',
-            $config,
-            $this->modx->getOption(
-                'filesluggy.allowed_file_types',
-                null,
-                'jpg,jpeg,png,gif,psd,ico,bmp,svg,doc,docx,pdf'
-            )
-        );
-        $LowerCaseOnly = (boolean) $this->modx->getOption(
-            'lowercase_only',
-            $config,
-            $this->modx->getOption('filesluggy.lowercase_only', null, 1)
-        );
-        $constrainMediaSource = $this->modx->getOption(
-            'constrain_mediasource',
-            $config,
-            $this->modx->getOption('filesluggy.constrain_mediasource', null, null)
-        );
-        $cultureKey = $this->modx->getOption('cultureKey', null, 'en');
-        $sanitizeDir = $this->modx->getOption(
-            'sanitizeDir',
-            $config,
-            $this->modx->getOption('filesluggy.sanitizeDir', null, false)
-        );
-        $this->SkipIconv = function_exists('iconv') ? false : true;
-        $this->SkipMB = function_exists('mb_check_encoding') ? false : true;
 
+        $corePath             = $this->modx->getOption('filesluggy.core_path', $config, $this->modx->getOption('core_path') . 'components/filesluggy/');
+        $constrainMediaSource = $this->modx->getOption('constrain_mediasource', $config, $this->modx->getOption('filesluggy.constrain_mediasource', null, null));
+        $this->SkipIconv      = function_exists('iconv') ? false : true;
+        $this->SkipMB         = function_exists('mb_check_encoding') ? false : true;
 
         $this->config = array_merge(array(
-                                        'corePath' => $corePath,
-                                        'modelPath' => $corePath . 'model/',
-                                        'charSet' => $charSet,
-                                        'encoding' => $Encoding,
-                                        'regExp' => $RegExp,
-                                        'addGuid' => (int) $AddGUID,
-                                        'filenamePrefix' => $fileNamePrefix,
-                                        'ignoreFilename' => (int) $ignoreFilename,
-                                        'wordDelimiter' => $Delimiter,
-                                        'lowerCase' => $LowerCaseOnly,
-                                        'cultureKey' => $cultureKey,
-                                        'sanitizeDir' => $sanitizeDir,
-                                        'fileTypes' => $fileTypes
-                                    ), $config);
-
+            'corePath'       => $corePath,
+            'modelPath'      => $corePath . 'model/',
+            'charSet'        => $this->modx->getOption('charset_iconv', $config, $this->modx->getOption('filesluggy.charset_iconv', null, 'US-ASCII//TRANSLIT')),
+            'encoding'       => strtoupper($this->modx->getOption('enc', $config, $this->modx->getOption('filesluggy.enc', null, 'UTF-8'))),
+            'regExp'         => $this->modx->getOption('regexp', $config, $this->modx->getOption('filesluggy.regexp', null, '/[^\.A-Za-z0-9 _-]/')),
+            'addGuid'        => (boolean) $this->modx->getOption('guid_use', $config, $this->modx->getOption('filesluggy.guid_use', null, 0)),
+            'filenamePrefix' => (string) $this->modx->getOption('filenamePrefix', $config, $this->modx->getOption('filesluggy.filename_prefix', null, '')),
+            'ignoreFilename' => (boolean) $this->modx->getOption('ignoreFilename', $config, $this->modx->getOption('filesluggy.ignorefilename', null, 0)),
+            'wordDelimiter'  => $this->modx->getOption('word_delimiter', $config, $this->modx->getOption('filesluggy.word_delimiter', null, '-')),
+            'lowerCase'      => (boolean) $this->modx->getOption('lowercase_only', $config, $this->modx->getOption('filesluggy.lowercase_only', null, 1)),
+            'cultureKey'     => $this->modx->getOption('cultureKey', null, 'en'),
+            'sanitizeDir'    => $this->modx->getOption('sanitizeDir', $config, $this->modx->getOption('filesluggy.sanitizeDir', null, false)),
+            'fileTypes'      => $this->modx->getOption('allowed_file_types', $config, $this->modx->getOption('filesluggy.allowed_file_types', null, 'jpg,jpeg,png,gif,psd,ico,bmp,svg,doc,docx,pdf'))
+        ), $config);
 
         $this->config['filenamePrefix'] = trim($this->config['filenamePrefix']);
-
-        if (!in_array($this->config['wordDelimiter'], array("-", "_"))) {
+        if (!in_array($this->config['wordDelimiter'], array('-', '_'))) {
             $this->config['wordDelimiter'] = '-';
         }
+
         $this->config['wordDelimiters'] = '-_';
         if (!empty($this->config['fileTypes'])) {
-            $tmp = preg_replace('/\s+/u', "", $this->config['fileTypes']);
+            $tmp = preg_replace('/\s+/u', '', $this->config['fileTypes']);
             $tmp = strtolower($tmp);
-            $tmp = explode(",", $this->config['fileTypes']);
+            $tmp = explode(',', $this->config['fileTypes']);
             foreach ($tmp as $data) {
                 $tmpArr[] = trim($data);
             }
@@ -122,15 +62,15 @@ class FileSluggy
                 $this->config['fileTypes'] = $tmpArr;
             }
         }
+
         if (!empty($constrainMediaSource)) {
-            $arrMS = explode(",", $constrainMediaSource);
+            $arrMS = explode(',', $constrainMediaSource);
             if (is_array($arrMS) && count($arrMS) > 0) {
                 $this->_mediaSourceAllow = $arrMS;
             } else {
                 $this->_mediaSourceAllow = null;
             }
         }
-
 
         $this->modx->addPackage('filesluggy', $this->config['modelPath']);
         $this->modx->lexicon->load('filesluggy:default');
@@ -146,6 +86,7 @@ class FileSluggy
         if (empty($this->_mediaSourceAllow)) {
             return true;
         }
+
         if (!empty($sourceID)) {
             if (in_array($sourceID, $this->_mediaSourceAllow)) {
                 return true;
@@ -171,9 +112,8 @@ class FileSluggy
     public function allowType($filename)
     {
         $fileData = pathinfo($filename);
-        $fileName = $fileData['filename'];
-        $fileExt = $fileData['extension'];
-        $fileExt = strtolower($fileExt);
+        $fileExt  = $fileData['extension'];
+        $fileExt  = strtolower($fileExt);
 
         if (in_array($fileExt, $this->config['fileTypes'])) {
             return true;
@@ -190,11 +130,11 @@ class FileSluggy
      */
     public function checkFileExists($filePath, $options = array())
     {
-        $fileData = pathinfo($filePath);
+        $fileData    = pathinfo($filePath);
         $fileNameOld = $fileData['filename'];
-        $fileBase = $fileData['basename'];
-        $fileName = $fileData['filename'];
-        $fileExt = $fileData['extension'];
+        $fileName    = $fileData['filename'];
+        $fileExt     = $fileData['extension'];
+
         if (file_exists($filePath)) {
             $fileName = $fileName . $this->config['wordDelimiter'] . 'duplicate.' . $fileExt;
             $newFilePath = str_replace($fileNameOld . '.' . $fileExt, $fileName, $filePath);
@@ -204,6 +144,7 @@ class FileSluggy
         } else {
             $fileName = $fileName . '.' . $fileExt;
         }
+
         return $fileName;
     }
 
@@ -231,14 +172,12 @@ class FileSluggy
      */
     public function sanitizeName($filePath, $isdir = false)
     {
-        $fileData = pathinfo($filePath);
-        $fileName = $fileData['filename'];
-        $fileExt = $fileData['extension'];
-
+        $fileData    = pathinfo($filePath);
+        $fileName    = $fileData['filename'];
+        $fileExt     = $fileData['extension'];
         $newFilename = '';
-        /**
-         * Add Prefix and Guid to the filename
-         */
+
+        /* Add Prefix and Guid to the filename. */
         if ($isdir) {
             $newFilename .= $fileName;
         } else {
@@ -257,18 +196,13 @@ class FileSluggy
             $newFilename = trim($newFilename, $this->config['wordDelimiter']);
         }
 
-        /**
-         *
-         */
         if (!$this->SkipMB) {
             if (!mb_check_encoding($newFilename, 'UTF-8')) {
                 $newFilename = mb_convert_encoding($newFilename, 'UTF-8');
             }
         }
 
-        /**
-         *  If possible execute iconv
-         */
+        /* If possible execute iconv. */
         if (!$this->SkipIconv) {
             setlocale(LC_ALL, strtolower($this->config['cultureKey']) . '_' . strtoupper($this->config['cultureKey']));
             if (iconv($this->config['encoding'], $this->config['charSet'], $newFilename)) {
@@ -279,19 +213,21 @@ class FileSluggy
         }
 
         /**
-         * Strip all spaces and double word delimters. Magic from MODX
+         * Strip all spaces and double word delimters. Magic from MODX.
+         * Replace one or more space characters with word delimiter.
          */
-        /* replace one or more space characters with word delimiter */
         $newFilename = preg_replace('/\s+/u', $this->config['wordDelimiter'], $newFilename);
-        /* replace one or more instances of word delimiters with word delimiter */
+
+        /* Replace one or more instances of word delimiters with word delimiter. */
         $delimiterTokens = array();
         for ($d = 0; $d < strlen($this->config['wordDelimiters']); $d++) {
             $delimiterTokens[] = $this->config['wordDelimiters']{$d};
         }
-        $delimiterPattern = '/[' . implode('|', $delimiterTokens) . ']+/';
-        $newFilename = preg_replace($delimiterPattern, $this->config['wordDelimiter'], $newFilename);
 
-        /** It is time for our own magic again */
+        $delimiterPattern = '/[' . implode('|', $delimiterTokens) . ']+/';
+        $newFilename      = preg_replace($delimiterPattern, $this->config['wordDelimiter'], $newFilename);
+
+        /** It is time for our own magic again. */
         if ($this->config['lowerCase']) {
             $newFilename = strtolower($newFilename);
         }
@@ -313,12 +249,15 @@ class FileSluggy
         if (empty($newFilename) || $newFilename == '') {
             $newFilename = uniqid();
         }
+
         if ($newFilename == $fileName) {
             $this->_FileNameSameAsOrginal = true;
         }
+
         if (!$isdir) {
             $newFilename .= '.' . $fileExt;
         }
+
         return $newFilename;
     }
 
@@ -330,12 +269,16 @@ class FileSluggy
      */
     public function renameContainer($source, $oldPath, $newName)
     {
-        $bases = $source->getBases($oldPath);
-        $oldPath = $bases['pathAbsolute'].$oldPath;
+        $bases       = $source->getBases($oldPath);
+        $oldPath     = $bases['pathAbsolute'] . $oldPath;
+        $fileHandler = $this->modx->getService('fileHandler','modFileHandler', '');
+
+        if (!$fileHandler) {
+            return false;
+        }
 
         /** @var modDirectory $oldDirectory */
-        $oldDirectory = $source->fileHandler->make($oldPath);
-
+        $oldDirectory = $fileHandler->make($oldPath);
         /* make sure is a directory and writable */
         if (!($oldDirectory instanceof modDirectory)) {
             return false;
@@ -344,17 +287,16 @@ class FileSluggy
             return false;
         }
 
-        /* sanitize new path */
-        $newPath = $source->fileHandler->sanitizePath($newName);
-        $newPath = $source->fileHandler->postfixSlash($newPath);
+        /* Sanitize new path. */
+        $newPath = $fileHandler->sanitizePath($newName);
+        $newPath = $fileHandler->postfixSlash($newPath);
         $newPath = dirname($oldPath).'/'.$newPath;
-        /* rename the dir */
+
+        /* Rename the dir. */
         if (!$oldDirectory->rename($newPath)) {
             return false;
         }
 
         return true;
     }
-
-
 }
