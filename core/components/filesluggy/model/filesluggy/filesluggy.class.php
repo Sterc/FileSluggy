@@ -330,12 +330,16 @@ class FileSluggy
      */
     public function renameContainer($source, $oldPath, $newName)
     {
-        $bases = $source->getBases($oldPath);
-        $oldPath = $bases['pathAbsolute'].$oldPath;
+        $bases       = $source->getBases($oldPath);
+        $oldPath     = $bases['pathAbsolute'] . $oldPath;
+        $fileHandler = $this->modx->getService('fileHandler','modFileHandler', '');
+
+        if (!$fileHandler) {
+            return false;
+        }
 
         /** @var modDirectory $oldDirectory */
-        $oldDirectory = $source->fileHandler->make($oldPath);
-
+        $oldDirectory = $fileHandler->make($oldPath);
         /* make sure is a directory and writable */
         if (!($oldDirectory instanceof modDirectory)) {
             return false;
@@ -345,8 +349,8 @@ class FileSluggy
         }
 
         /* sanitize new path */
-        $newPath = $source->fileHandler->sanitizePath($newName);
-        $newPath = $source->fileHandler->postfixSlash($newPath);
+        $newPath = $fileHandler->sanitizePath($newName);
+        $newPath = $fileHandler->postfixSlash($newPath);
         $newPath = dirname($oldPath).'/'.$newPath;
         /* rename the dir */
         if (!$oldDirectory->rename($newPath)) {
@@ -355,6 +359,4 @@ class FileSluggy
 
         return true;
     }
-
-
 }
