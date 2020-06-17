@@ -1,5 +1,9 @@
 Changelog for FileSluggy, a MODX Revolution extra by Sterc.
 
+FileSluggy 1.3.3
+==============
+- Added compatibilty for MODX 3 (flysystem).
+
 FileSluggy 1.3.2
 ==============
 - Prevent adding of guid to directories (issue #8).
