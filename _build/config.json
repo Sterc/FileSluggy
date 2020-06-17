@@ -3,7 +3,7 @@
     "lowCaseName": "filesluggy",
     "description": "A MODX extra to sanitize file- and foldernames upon upload and creation.",
     "author": "Sterc",
-    "version": "1.3.2",
+    "version": "1.3.3",
     "package":{  
         "menus": [],
         "elements": {

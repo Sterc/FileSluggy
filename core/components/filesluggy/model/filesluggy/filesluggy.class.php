@@ -330,11 +330,15 @@ class FileSluggy
      */
     public function renameContainer($source, $oldPath, $newName)
     {
-        $bases = $source->getBases($oldPath);
-        $oldPath = $bases['pathAbsolute'].$oldPath;
-
-        /** @var modDirectory $oldDirectory */
-        $oldDirectory = $source->fileHandler->make($oldPath);
+        if (version_compare($this->modx->getOption('settings_version'), '3') >= 0) {
+            /** @var modDirectory $oldDirectory */
+            $oldDirectory = $source->getFilesystem()->createDir($oldPath);
+        } else {
+            $bases = $source->getBases($oldPath);
+            $oldPath = $bases['pathAbsolute'].$oldPath;
+            /** @var modDirectory $oldDirectory */
+            $oldDirectory = $source->fileHandler->make($oldPath);
+        }
 
         /* make sure is a directory and writable */
         if (!($oldDirectory instanceof modDirectory)) {

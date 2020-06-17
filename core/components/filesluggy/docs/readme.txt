@@ -1,6 +1,6 @@
 FileSluggy
 --------------------
-Version: 1.3
+Version: 1.3.3
 Author: Sterc <modx@sterc.nl>
 --------------------
 
