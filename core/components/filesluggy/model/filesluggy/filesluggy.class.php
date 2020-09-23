@@ -323,6 +323,23 @@ class FileSluggy
     }
 
     /**
+     * Safely remove a directory.
+     * @param $source
+     * @param $path
+     * @return bool
+     */
+    public function removeDirectoryIfEmpty($source, $path)
+    {
+        if (count($source->getFilesystem()->listContents($path)) > 0) {
+            $this->modx->log(xPDO::LOG_LEVEL_ERROR, '[FileSluggy.removeDirectoryIfEmpty] Cannot remove directory because it is not empty: ' . $path);
+
+            return false;
+        }
+
+        return $source->getFileSystem()->deleteDir($path);
+    }
+
+    /**
      * @param object $source
      * @param string $oldPath
      * @param string $newName
@@ -331,34 +348,77 @@ class FileSluggy
     public function renameContainer($source, $oldPath, $newName)
     {
         if (version_compare($this->modx->getOption('settings_version'), '3') >= 0) {
-            /** @var modDirectory $oldDirectory */
-            $oldDirectory = $source->getFilesystem()->createDir($oldPath);
+            /* Format old and new paths to prevent mismatches based on / or ., such as ./directory/ and /directory/. */
+            $oldPath = trim($oldPath, '/');
+            $newPath = rtrim(dirname($oldPath), '/') . '/' . $newName;
+            $newPath = ltrim($newPath, './');
+
+            /* If the old path equals the new path, nothing needs to be renamed because these paths are exactly the same. This occurs when creating a new folder with a name such as parent. */
+            if ($oldPath === $newPath) {
+                return false;
+            }
+
+            /** If that path equals to the sanitized path and that already exists, then we remove the old path. For example: "PARENT " while "parent" already exists. */
+            if (strtolower(trim($oldPath)) === $newPath && strlen($oldPath) > strlen($newPath) && $source->getFilesystem()->has($newPath)) {
+                return $this->removeDirectoryIfEmpty($source, $oldPath);
+            }
+
+            $oldPathInfo          = pathinfo($oldPath);
+            $fullSanitizedOldPath = $oldPathInfo['dirname'] . '/' . $this->sanitizeName($oldPath, true);
+            /* If the old sanitized name equals the new path, we need to rename. Example: PARENT --> parent. */
+            if ($oldPath !== $newPath && $fullSanitizedOldPath === $newPath) {
+                try {
+                    $tmpName = $newPath . '-tmp-' . time();
+                    $source->getFilesystem()->rename($oldPath, $tmpName);
+
+                    $source->getFilesystem()->getAdapter()->getCache()->flush();
+
+                    return $source->getFilesystem()->rename($tmpName, $newPath);
+                } catch (Exception $exception) {
+                    /* If the new path already exists, then we only need to remove the old path. So parent already exists, so remove old directory PARENT. */
+                    return $this->removeDirectoryIfEmpty($source, $oldPath);
+                }
+            }
+
+            /* Simply rename the directory. */
+            try {
+                return $source->getFilesystem()->rename($oldPath, $newPath);
+            } catch (Exception $exception) {
+                $tmpName = $newPath . '-tmp-' . time();
+                $source->getFilesystem()->rename($oldPath, $tmpName);
+
+                $source->getFilesystem()->getAdapter()->getCache()->flush();
+
+                try {
+                    return $source->getFilesystem()->rename($tmpName, $newPath);
+                } catch (Exception $exception) {
+                    $this->modx->log(xPDO::LOG_LEVEL_ERROR, '[FileSluggy] Failed renaming directory: ' . $exception->getMessage());
+                }
+            }
         } else {
             $bases = $source->getBases($oldPath);
-            $oldPath = $bases['pathAbsolute'].$oldPath;
+            $oldPath = $bases['pathAbsolute'] . $oldPath;
             /** @var modDirectory $oldDirectory */
             $oldDirectory = $source->fileHandler->make($oldPath);
-        }
 
-        /* make sure is a directory and writable */
-        if (!($oldDirectory instanceof modDirectory)) {
-            return false;
-        }
-        if (!$oldDirectory->isReadable() || !$oldDirectory->isWritable()) {
-            return false;
-        }
+            /* make sure is a directory and writable */
+            if (!($oldDirectory instanceof modDirectory)) {
+                return false;
+            }
+            if (!$oldDirectory->isReadable() || !$oldDirectory->isWritable()) {
+                return false;
+            }
 
-        /* sanitize new path */
-        $newPath = $source->fileHandler->sanitizePath($newName);
-        $newPath = $source->fileHandler->postfixSlash($newPath);
-        $newPath = dirname($oldPath).'/'.$newPath;
-        /* rename the dir */
-        if (!$oldDirectory->rename($newPath)) {
-            return false;
+            /* sanitize new path */
+            $newPath = $source->fileHandler->sanitizePath($newName);
+            $newPath = $source->fileHandler->postfixSlash($newPath);
+            $newPath = dirname($oldPath) . '/' . $newPath;
+            /* rename the dir */
+            if (!$oldDirectory->rename($newPath)) {
+                return false;
+            }
         }
 
         return true;
     }
-
-
 }
