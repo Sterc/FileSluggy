@@ -73,6 +73,11 @@
             "type": "textfield",
             "value": "",
             "area": "fs_type"
+       },{
+            "key": "forceFSOUFEvent",
+            "type": "combo-boolean",
+            "value": "0",
+            "area": "fs_events"
        }]
     },
     "database": {},
