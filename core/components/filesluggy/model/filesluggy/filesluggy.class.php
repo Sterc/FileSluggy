@@ -286,7 +286,7 @@ class FileSluggy
         /* replace one or more instances of word delimiters with word delimiter */
         $delimiterTokens = array();
         for ($d = 0; $d < strlen($this->config['wordDelimiters']); $d++) {
-            $delimiterTokens[] = $this->config['wordDelimiters']{$d};
+            $delimiterTokens[] = $this->config['wordDelimiters'][$d];
         }
         $delimiterPattern = '/[' . implode('|', $delimiterTokens) . ']+/';
         $newFilename = preg_replace($delimiterPattern, $this->config['wordDelimiter'], $newFilename);
