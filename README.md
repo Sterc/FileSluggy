@@ -1,5 +1,5 @@
 # FileSluggy
-![Version](https://img.shields.io/badge/version-1.3.1-blue.svg) ![MODX Extra by Sterc](https://img.shields.io/badge/checked%20by-sterc-ff69b4.svg) ![MODX version requirements](https://img.shields.io/badge/modx%20version%20requirement-2.3%2B-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-1.3.5-blue.svg) ![MODX Extra by Sterc](https://img.shields.io/badge/checked%20by-sterc-ff69b4.svg) ![MODX version requirements](https://img.shields.io/badge/modx%20version%20requirement-2.3%2B-brightgreen.svg)
 
 ## Installation
 Install from ```Extras > Installer```. Install and go!
