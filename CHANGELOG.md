@@ -1,5 +1,9 @@
 Changelog for FileSluggy, a MODX Revolution extra by Sterc.
 
+FileSluggy 3.0.0
+==============
+- MODX3 refactor
+
 FileSluggy 1.3.5
 ==============
 - Fixed PHP 7.4 compatibilty issue (issue #34)

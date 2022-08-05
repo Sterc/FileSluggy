@@ -5,25 +5,31 @@
  * @package formit
  * @subpackage build
  */
-if ($object->xpdo) {
+use MODX\Revolution\modX;
+use MODX\Revolution\modEvent;
+use xPDO\Transport\xPDOTransport;
+
+if ($transport->xpdo) {
     /** @var modX $modx */
-    $modx =& $object->xpdo;
+    $modx =& $transport->xpdo;
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
             $events = ['FileSluggyOnUpdateDirname', 'FileSluggyOnUpdateFilename'];
             foreach ($events as $eventName) {
-                $eventFields = array(
-                    'name' => $eventName,
-                    'service' => 1,
+                $eventFields = [
+                    'name'      => $eventName,
+                    'service'   => 1,
                     'groupname' => 'FileSluggy'
-                );
-                if (!$modx->getCount('modEvent', $eventFields)) {
-                    $eventObj = $modx->newObject('modEvent');
+                ];
+
+                if (!$modx->getCount(modEvent::class, $eventFields)) {
+                    $eventObj = $modx->newObject(modEvent::class);
                     $eventObj->set('name', $eventName);
                     $eventObj->set('service', 1);
                     $eventObj->set('groupname', 'FileSluggy');
                     $eventObj->save();
+
                     $modx->log(modX::LOG_LEVEL_INFO, 'Added system event: ' . $eventName);
                 }
             }

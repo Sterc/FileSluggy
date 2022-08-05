@@ -1,0 +1,15 @@
+{
+    "name": "sterc/filesluggy",
+    "description": "A MODX extra to sanitize file- and foldernames upon upload and creation.",
+    "keywords": [
+        "MODX",
+        "FileSluggy"
+    ],
+    "type": "library",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Sterc\\FileSluggy\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,69 @@
+name: FileSluggy
+lowCaseName: filesluggy
+description: A MODX extra to sanitize file- and foldernames upon upload and creation.
+author: Sterc
+version: 3.0.0
+
+build:
+  setupOptions: "setup.options.php"
+  scriptsAfter: ["setupoptions.resolver.php", "stercextra.resolver.php", "resolve.systemevents.php"]
+
+systemSettings:
+  - key: user_name
+    type: textfield
+    area: general
+    value:
+  - key: user_email
+    type: textfield
+    area: general
+    value:
+  - key: charset_iconv
+    type: textfield
+    value: US-ASCII//TRANSLIT
+    area: fs_encoding
+  - key: enc
+    type: modx-combo-charset
+    value: UTF-8
+    area: fs_encoding
+  - key: regexp
+    type: textfield
+    value: /[^\\.A-Za-z0-9 _-]/
+    area: fs_encoding
+  - key: guid_use
+    type: combo-boolean
+    value: 0
+    area: fs_guid
+  - key: filename_prefix
+    type: textfield
+    value:
+    area: fs_guid
+  - key: ignorefilename
+    type: combo-boolean
+    value: 0
+    area: fs_guid
+  - key: word_delimiter
+    type: textfield
+    value: -
+    area: fs_guid
+  - key: lowercase_only
+    type: combo-boolean
+    value: 1
+    area: fs_guid
+  - key: sanitizeDir
+    type: combo-boolean
+    value: 1
+    area: fs_type
+  - key: allowed_file_types
+    type: textfield
+    value: jpg,jpeg,png,gif,psd,ico,bmp,svg,doc,docx,pdf
+    area: fs_type
+  - key: constrain_mediasource
+    type: textfield
+    value:
+    area: fs_type
+
+plugins:
+  - name: FileSluggy
+    description: FileSluggy plugin for MODx Revolution
+    file: 'filesluggy.plugin.php'
+    events: ['OnFileManagerDirCreate', 'OnFileManagerDirRename', 'OnFileManagerUpload']
