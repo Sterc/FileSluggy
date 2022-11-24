@@ -104,6 +104,15 @@ $settings['filesluggy.constrain_mediasource']->fromArray(array(
     'area' => 'fs_type',
 ),'',true,true);
 
+$settings['filesluggy.forceFSOUFEvent']= $modx->newObject('modSystemSetting');
+$settings['filesluggy.forceFSOUFEvent']->fromArray(array(
+    'key' => 'filesluggy.forceFSOUFEvent',
+    'value' => false,
+    'xtype' => 'combo-boolean',
+    'namespace' => 'filesluggy',
+    'area' => 'fs_events',
+),'',true,true);
+
 
 
 return $settings;
